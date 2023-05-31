@@ -1,5 +1,3 @@
-package github.zimoyin.test;
-
 import github.zimoyin.httpserver.core.AbsHttpHandler;
 import github.zimoyin.httpserver.core.Request;
 import github.zimoyin.httpserver.core.Response;

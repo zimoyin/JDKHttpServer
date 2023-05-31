@@ -22,6 +22,8 @@ import java.util.logging.Logger;
 public abstract class AbsHttpHandler implements HttpHandler {
     protected final Logger logger = SimpleConsoleFormatter.installFormatter(Logger.getLogger(this.getClass().getTypeName()));
     private final String route;
+    private final boolean debugLog = false;
+
     /**
      * 服务器ID
      */
@@ -37,7 +39,7 @@ public abstract class AbsHttpHandler implements HttpHandler {
     @Override
     public final void handle(HttpExchange exchange) throws IOException {
         try {
-//            logger.info("Http handler route: " + route);
+            if (debugLog) logger.info("Http handler route: " + route);
             if (getID() == null) throw new NullPointerException("HTTP Server ID is null");
             //根据根据请求方法来分发请求
             doMethod(exchange.getRequestMethod(), exchange);
@@ -60,7 +62,7 @@ public abstract class AbsHttpHandler implements HttpHandler {
 
         if (accept) switch (methodName.toUpperCase()) {
             case "GET" -> {
-//                logger.info("Get Path: " + exchange.getRequestURI().getSchemeSpecificPart());
+                if (debugLog) logger.info("Get Path: " + exchange.getRequestURI().getSchemeSpecificPart());
                 try {
                     doGet(request, response);
                 } catch (Exception e) {
@@ -69,7 +71,7 @@ public abstract class AbsHttpHandler implements HttpHandler {
                 }
             }
             case "POST" -> {
-//                logger.info("Post Path: " + exchange.getRequestURI().getSchemeSpecificPart());
+                if (debugLog) logger.info("Post Path: " + exchange.getRequestURI().getSchemeSpecificPart());
                 try {
                     doPost(request, response);
                 } catch (Exception e) {
@@ -78,7 +80,7 @@ public abstract class AbsHttpHandler implements HttpHandler {
                 }
             }
             case "OPTIONS" -> {
-//                logger.info("OPTIONS Path: " + exchange.getRequestURI().getSchemeSpecificPart());
+                if (debugLog) logger.info("OPTIONS Path: " + exchange.getRequestURI().getSchemeSpecificPart());
                 try {
                     doOptions(request, response);
                 } catch (Exception e) {
@@ -93,7 +95,7 @@ public abstract class AbsHttpHandler implements HttpHandler {
         try {
             close(response, exchange);
         } catch (IllegalStateException e) {
-//            if (error)  logger.log(Level.INFO, "Please ignore this exception", e);
+            if (debugLog) if (error) logger.log(Level.INFO, "Please ignore this exception", e);
             if (!error) throw e;
         }
 
@@ -138,7 +140,7 @@ public abstract class AbsHttpHandler implements HttpHandler {
      */
     protected void doRequest(Request request, Response response) throws IOException {
 //        logger.info("/" + request.getMethod() + " Path: " + request.getPath());
-        logger.warning("/" + request.getMethod() + " Path: " + request.getPath()+" -> 无法解析的 Method :" + request.getMethod());
+        logger.warning("/" + request.getMethod() + " Path: " + request.getPath() + " -> 无法解析的 Method :" + request.getMethod());
         response.setCode(-405);
         response.write("This Request Method not support.");
     }
@@ -161,11 +163,12 @@ public abstract class AbsHttpHandler implements HttpHandler {
     public String getRoute() {
         return route;
     }
+
     /**
      * 重定向
      */
-    public void redirectTo(HttpExchange exchange,String path) throws IOException {
-        exchange.getResponseHeaders().add("Location",path);
+    public void redirectTo(HttpExchange exchange, String path) throws IOException {
+        exchange.getResponseHeaders().add("Location", path);
         exchange.sendResponseHeaders(302, 0);
     }
 

@@ -25,6 +25,7 @@ public final class SimpleHttpServer {
     private final HashSet<AbsHttpHandler> routes = new HashSet<>();
     private final String RootPath;
     private boolean isRunning = false;
+
     /**
      * 队列数量
      */
@@ -79,7 +80,7 @@ public final class SimpleHttpServer {
         server.createContext(RootPath, new StaticResourcesRoute(routes, RootPath).setID(ID));
         //路由日志
         logger.info("Loaded routes finished successfully: " + (routes.size() + 1));
-        if (routes.size() == 0) logger.warning("No routes found for this application");
+        if (routes.size() == 0) logger.warning("No routes found for this application (port: " + port + ")");
         // 配置HttpServer请求处理的线程池，没有配置则使用默认的线程池；
         if (executor != null) server.setExecutor(executor);
         logger.info("Loading executor : " + executor);
